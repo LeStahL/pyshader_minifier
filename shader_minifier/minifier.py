@@ -129,13 +129,13 @@ class shader_minifier:
                 ))
 
                 if len(paths) == 0:
-                    print("All shader_minifier executables in PATH have the wrong version. Will download.")
+                    # All shader_minifier executables in PATH have the wrong version. Download it.
                     obtain = ObtainmentStrategy.Download
                 else:
                     path = paths[0]
             
             else:
-                print("No shader_minifier executable found in PATH. Will download.")
+                # No shader_minifier executable found in PATH. Download it.
                 obtain = ObtainmentStrategy.Download
 
         if obtain == ObtainmentStrategy.Download:

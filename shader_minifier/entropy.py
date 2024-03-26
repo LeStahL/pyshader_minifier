@@ -5,9 +5,6 @@ from typing import (
     Tuple,
     Dict,
 )
-from platform import (
-    system,
-)
 from enum import (
     IntEnum,
     auto,
@@ -48,7 +45,6 @@ class Entropy(QObject):
 
         self._buildCommand: Optional[List[str]] = buildCommand
         self._home: Path = home if home is not None else Path('.')
-        print("Will determine entropy from pwd `{}`.".format(self._home))
         
         self._versions: Dict[str, float] = {}
 
@@ -74,7 +70,6 @@ class Entropy(QObject):
 
             while self._queue.qsize() != 0:
                 hash = self._queue.get()
-                print("Getting entropy for", hash)
 
                 if self._buildCommand is not None:
                     try:

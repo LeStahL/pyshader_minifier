@@ -31,6 +31,7 @@ class Scheduler(QObject):
     errored: pyqtSignal = pyqtSignal(str, QVariant)
     stopped: pyqtSignal = pyqtSignal()
     minifiersObtained: pyqtSignal = pyqtSignal()
+    resetted: pyqtSignal = pyqtSignal()
 
     def __init__(self: Self) -> None:
         super().__init__()
@@ -80,6 +81,7 @@ class Scheduler(QObject):
                     self._queue.get()
                 self._versions = {}
                 self._reset = False
+                self.resetted.emit()
                 self.versionsUpdated.emit(self)
 
             while self._queue.qsize() != 0:

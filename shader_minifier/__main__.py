@@ -5,8 +5,7 @@ from PyQt6.QtCore import (
     QCommandLineParser,
     QCommandLineOption,
 )
-from PyQt6.QtWidgets import QStyleFactory
-from sys import argv, exit
+from sys import argv
 from shader_minifier.mainwindow import MainWindow
 from shader_minifier.watcher import Watcher
 from shader_minifier.version import Version
@@ -27,7 +26,6 @@ if __name__ == '__main__':
     application.setApplicationName('pyshader_minifier')
     application.setApplicationVersion(Version().describe())
 
-    print(QStyleFactory.keys())
     if system() == 'Windows':
         application.setStyle('Fusion')
 
@@ -69,8 +67,7 @@ if __name__ == '__main__':
     watcher.fileChanged.connect(mainWindow.updateModelsFromWatcher)
     watcher.fileChanged.connect(lambda _watcher: scheduler.minifyShader(_watcher.latestHash, _watcher._versions[_watcher.latestHash]))
     watcher.fileChanged.connect(lambda _watcher: entropy.determineEntropy(_watcher.latestHash))
-    watcher.fileLoaded.connect(scheduler.reset)
-    
+
     # Connect scheduler.
     scheduler.minifiersObtained.connect(watcher.updateFile)
     scheduler.versionsUpdated.connect(mainWindow.updateModelsFromScheduler)
@@ -90,38 +87,39 @@ if __name__ == '__main__':
         QApplication.exit(0)
 
     def open(path: str) -> None:
-        entropy.reset()
-        scheduler.reset()
-
         if watcher.receivers(watcher.resetted) != 0:
             watcher.resetted.disconnect()
-        watcher.resetted.connect(lambda path=path: watcher.watchFile(path))
-        # watcher.resetted.connect(watcher.updateFile)
-        watcher.reset()
 
         if repository.receivers(repository.resetted) != 0:
             repository.resetted.disconnect()
+
+        scheduler.resetted.connect(watcher.updateFile)
+
         repository.resetted.connect(lambda path=path: repository.changeShader(Path(path)))
-        # repository.resetted.connect(watcher.updateFile)
-        repository.reset()
+
+        watcher.resetted.connect(lambda path=path: watcher.watchFile(path))
+        watcher.resetted.connect(lambda scheduler=scheduler: scheduler.reset())
+        watcher.resetted.connect(lambda repository=repository: repository.reset())
+        watcher.resetted.connect(lambda entropy=entropy: entropy.reset())
+
+        watcher.reset()
 
     def changeMinifier(version: str) -> None:
         scheduler.selectMinifier(version)
         if watcher._path is not None:
             open(str(watcher._path))
-        watcher.resetted.connect(watcher.updateFile)
 
     mainWindow.quitRequested.connect(cleanup)
     mainWindow.exportRequested.connect(watcher.saveHistory)
     mainWindow.commitRequested.connect(repository.createCommit)
     mainWindow.minifierVersionRequested.connect(changeMinifier)
+    mainWindow.fileChangeRequested.connect(open)
 
     # Set up state from command line args.
     arguments: List[str] = parser.positionalArguments()
     if len(arguments) > 0:
         open(arguments[0])
-        scheduler.minifiersObtained.connect(watcher.updateFile)
-    
+
     if len(arguments) > 1:
         print("Warning: Ignoring additional positional CLI arguments: `{}`.".format(','.join(arguments[1:])))
 

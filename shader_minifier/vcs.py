@@ -90,7 +90,6 @@ class VCS(QObject):
                 hash, size, entropy = self._queue.get()
 
                 if not self._latestHash == hash:
-                    print("Creating commit.")
                     try:
                         self._repository.index.add(self._shader.relative_to(self._path))
                         self._repository.index.write()
@@ -114,10 +113,11 @@ class VCS(QObject):
                         )
                         self._repository.head.set_target(commit)
                     except:
-                        print("Could not create commit.")
+                        print("Error: Could not create commit.")
                         print_exc()
                 else:
-                    print("Ignoring attempted empty commit with identical hash.")
+                    # A commit only makes sense if something has actually changed.
+                    print("Warning: Ignoring attempted empty commit with identical hash.")
 
             sleep(1 / VCS.FPS)
 
@@ -127,7 +127,6 @@ class VCS(QObject):
         size: int,
         entropy: Optional[int] = None,
     ) -> None:
-        print("putting", hash, size, entropy)
         self._queue.put((hash, size, entropy))
 
     def reset(self: Self) -> None:

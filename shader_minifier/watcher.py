@@ -52,8 +52,9 @@ class Watcher(QObject):
         
     def _run(self: Self) -> int:
         while self._running:
+            # Note: Qt loses the directory from time to time. If this happens, it will silently remove the file from its watch list.
+            # We can readd it tho.
             if self._watcher is not None and self._path is not None and len(self._watcher.files()) == 0:
-                print("We lost our directory (wtf, qt, no signal?!). Reclaiming.")
                 self._watcher.addPath(str(self._path))
                 self.updateFile()
 
@@ -68,7 +69,6 @@ class Watcher(QObject):
             while self._queue.qsize() != 0:
                 self._queue.get()
 
-                print("Updating.")
                 if self._path is None:
                     break
 
@@ -84,7 +84,8 @@ class Watcher(QObject):
                     self._latestHash = hash
                     self.fileChanged.emit(self)
                 else:
-                    print("Ignored update.")
+                    # If nothing changed, we do not need to update.
+                    pass
 
             sleep(1 / Watcher.FPS)
 
