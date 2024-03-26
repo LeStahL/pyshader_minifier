@@ -17,10 +17,9 @@ cached-path = "^1.6.0"
 pygit2 = "^1.14.1"
 parse = "^1.20.1"
 pyqt6 = "^6.6.1"
-pyinstaller = "^6.5.0"
 
 [tool.poetry.group.dev.dependencies]
-pyinstaller = "^6.4.0"
+pyinstaller = "^6.5.0"
 snakeviz = "^2.2.0"
 
 [build-system]
