@@ -23,6 +23,7 @@ from PyQt6.QtCore import (
     QVariant,
 )
 from time import sleep
+from traceback import print_exc
 
 
 class LinkerType(IntEnum):
@@ -81,9 +82,38 @@ class Entropy(QObject):
 
                         if result.returncode == 0:
                             output: str = result.stdout.decode('utf-8').strip()
-                            [data_size, _, _] = parse("{} + {} = {}", output)
+                            data_size: Optional[float] = None
+                            parsed: bool = False
+
+                            # Attempt to parse Cold output format.
+                            try:
+                                [data_size, _, _] = parse(
+                                    "{} + {} = {}",
+                                    output,
+                                )
+                                parsed = True
+                            except:
+                                pass
+
+                            # Attempt to parse Crinkler output format.
+                            lines: List[str] = list(filter(
+                                lambda line: line.lstrip().startswith("Ideal compressed size of data:"),
+                                output.splitlines(),
+                            ))
+                            if len(lines) != 0:
+                                [data_size] = parse(
+                                    "Ideal compressed size of data: {}",
+                                    lines[0].lstrip().rstrip(),
+                                )
+                                parsed = True
+
+                            if not parsed:
+                                print("Could not parse build output:")
+                                print(output)
+
                             self._versions[hash] = data_size
                     except:
+                        print_exc()
                         self._versions[hash] = 'Errored'
                     self.built.emit(self)
 
