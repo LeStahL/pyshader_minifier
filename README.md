@@ -10,7 +10,7 @@ For debugging, run `poetry run python -m shader_minifier` from the source root.
 
 For building an executable, run `poetry run pyinstaller pyinstaller.spec` from the source root. The executable and a release archive will be generated in the `dist` subfolder.
 
-# Use
+# Features
 pyshader_minifier can
 * Find and download all tagged shader minifier versions.
 * Interface shader_minifier from python.
@@ -22,6 +22,25 @@ pyshader_minifier can
 * Create a commit with the current crunching state by only pressing a button in the UI.
 * Display the entropy of your intro using a custom build command. Currently supports Crinkler(Loonies)-based output and Prost(Epoqe)-based output.
 * Export the entire history of your crunching session to a JSON format (maybe you want to save that specific version you skipped over quickly?).
+
+# Use
+```
+Usage: /home/nr4/code/pyshader_minifier/shader_minifier/__main__.py [options] [file]
+A CLI, GUI tool and library to interface the CTRL-ALT-TEST-minifier effectively.
+
+Options:
+  -h, --help                         Displays help on commandline options.
+  --help-all                         Displays help, including generic Qt
+                                     options.
+  -v, --version                      Displays version information.
+  -b, --build <command>              Command line that builds your intro and
+                                     has linker output with entropy in stdout.
+  -w, --working-directory <command>  Working directory to run the build command
+                                     in.
+
+Arguments:
+  file                               Shader source to watch.
+```
 
 # License
 pyshader_minifier is (c) 2024 Alexander Kraus <nr4@z10.info> and GPLv3; see LICENSE for details.
