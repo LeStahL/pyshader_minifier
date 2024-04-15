@@ -1,5 +1,5 @@
 # pyshader_minifier
-Shader minifier interface and validation library for Python with a neat UI.
+[Shader minifier](https://github.com/laurentlb/Shader_Minifier) interface and validation library for Python with a neat UI.
 
 ![Screenshot](https://github.com/LeStahL/pyshader_minifier/blob/main/screenshot.png?raw=true)
 
