@@ -20,6 +20,7 @@ pyshader_minifier can
 * Display the diff between the current state's (minified or original) source and a reference state in the history to obtain fine grained information on what shader_minifier did. That's a neat way to know whether or not your newest smart optimization actually decreased the minified source size!
 * Change between tagged shader_minifier versions quickly.
 * Create a commit with the current crunching state by only pressing a button in the UI.
+* Display the entropy of your intro using a custom build command. Currently supports Crinkler(Loonies)-based output and Prost(Epoqe)-based output.
 * Export the entire history of your crunching session to a JSON format (maybe you want to save that specific version you skipped over quickly?).
 
 # License
