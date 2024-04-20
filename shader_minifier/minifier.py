@@ -6,6 +6,7 @@ from typing import (
 )
 from enum import (
     IntEnum,
+    StrEnum,
     auto,
 )
 from subprocess import (
@@ -45,6 +46,21 @@ class MinifierVersion(IntEnum):
     v1_3 = auto()
     v1_2 = auto()
     v1_1_6 = auto()
+
+
+class MinifierOutputFormat(StrEnum):
+    Text = 'text'
+    Indented = 'indented'
+    CVariables = 'c-variables'
+    JavaScript = 'js'
+    Nasm = 'nasm'
+    Rust = 'rust'
+
+
+class MinifierSwizzleType(StrEnum):
+    RGBA = 'rgba'
+    XYZW = 'xyzw'
+    STPQ = 'stpq'
 
 
 class shader_minifier:
@@ -198,7 +214,25 @@ class shader_minifier:
             if result.returncode != 0:
                 raise ValidationError(result.stdout.decode('utf-8'))
 
-    def minify(self: Self, source: str) -> Optional[str]:
+    def minify(
+        self: Self,
+        source: str,
+        verbose: bool = False,
+        hlsl: bool = False,
+        format: MinifierOutputFormat = MinifierOutputFormat.Indented,
+        field_names: MinifierSwizzleType = MinifierSwizzleType.RGBA,
+        preserve_externals: bool = False,
+        preserve_globals: bool = False,
+        no_inlining: bool = False,
+        aggressive_inlining: bool = False,
+        no_renaming: bool = False,
+        no_renaming_list: Optional[List[str]] = None,
+        no_sequence: bool = None,
+        smoothstep: bool = False,
+        no_remove_unused: bool = False,
+        move_declarations: bool = False,
+        preprocess: bool = False,
+    ) -> Optional[str]:
         with TemporaryDirectory() as tempDir:
             (Path(tempDir) / 'unminified.frag').write_text(source)
 
@@ -216,12 +250,26 @@ class shader_minifier:
 
             # Minify shader
             result: CompletedProcess = run(
-                [
-                    self._path,
-                    '-o', Path(tempDir) / 'minified.frag',
-                    '--format', 'indented',
-                    Path(tempDir) / 'unminified.frag',
-                ],
+                ' '.join([
+                    '\"{}\"'.format(self._path),
+                    '-o', '\"{}\"'.format(Path(tempDir) / 'minified.frag'),
+                    '-v' if verbose else '',
+                    '--hlsl' if hlsl else '',
+                    '--format', format.value,
+                    '--field-names', field_names.value,
+                    '--preserve-externals' if preserve_externals else '',
+                    '--preserve-all-globals' if preserve_globals else '',
+                    '--no-inlining' if no_inlining else '',
+                    '--aggressive-inlining' if aggressive_inlining else '',
+                    '--no-renaming' if no_renaming else '',
+                    '--no-renaming-list' if no_renaming_list is not None else '', ','.join(no_renaming_list) if no_renaming_list is not None else ''
+                    '--no-sequence' if no_sequence else '',
+                    '--smoothstep' if smoothstep else '',
+                    '--no-remove-unused' if no_remove_unused else '',
+                    '--move-declarations' if move_declarations else '',
+                    '--preprocess' if preprocess else '',
+                    '\"{}\"'.format(Path(tempDir) / 'unminified.frag'),
+                ]),
                 capture_output=True,
             )
 
