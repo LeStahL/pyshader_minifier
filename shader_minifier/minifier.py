@@ -271,6 +271,7 @@ class shader_minifier:
                     '\"{}\"'.format(Path(tempDir) / 'unminified.frag'),
                 ]),
                 capture_output=True,
+                shell=True,
             )
 
             if result.returncode != 0:
