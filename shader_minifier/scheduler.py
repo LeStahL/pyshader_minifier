@@ -41,7 +41,7 @@ class Scheduler(QObject):
         self._running: bool = True
         self._reset: bool = False
         self._minifiers: Dict[MinifierVersion, shader_minifier] = {}
-        self._selectedVersion: MinifierVersion = MinifierVersion.v1_3_6
+        self._selectedVersion: MinifierVersion = MinifierVersion.v1_4_0
 
         self._versions: Dict[str, str] = {}
 

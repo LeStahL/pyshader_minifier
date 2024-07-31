@@ -37,6 +37,7 @@ class ObtainmentStrategy(IntEnum):
 
 class MinifierVersion(IntEnum):
     unavailable = auto()
+    v1_4_0 = auto()
     v1_3_6 = auto()
     v1_3_5 = auto()
     v1_3_4 = auto()
@@ -83,6 +84,7 @@ class shader_minifier:
         MinifierVersion.v1_3_4: '5c7da81cb612e9367596197c6f6d3d798686542d3c312d3c12bf211a23e79bdc',
         MinifierVersion.v1_3_5: '6fe8dce492bb3b25c1f13e910d72a26ed22bce5765b0eed9922d2f1ed58a6681',
         MinifierVersion.v1_3_6: 'c71e0ac9c2e73083e4d5faa232382dee1c1665b5f494fc2abebb89fa90c5aa1f',
+        MinifierVersion.v1_4_0: '7a4bd1605a0e3d3cc501265a439be2888c4865c3694518f7ba41200f5808d610',
     }
     validatorHash: str = '64df5da3b9b496b764fe7884fb730814639bf4b200da6fc4ed5fb1d6fc506302'
 
