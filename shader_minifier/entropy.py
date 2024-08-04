@@ -81,15 +81,18 @@ class Entropy(QObject):
                         )
 
                         if result.returncode == 0:
-                            output: str = result.stdout.decode('utf-8').strip()
                             data_size: Optional[float] = None
                             parsed: bool = False
 
                             # Attempt to parse Cold output format.
                             try:
+                                lines: List[str] = list(filter(
+                                    lambda line: "Entropy" in line.lstrip(),
+                                    result.stderr.decode('utf-8').strip().splitlines(),
+                                ))
                                 [data_size, _, _] = parse(
-                                    "{} + {} = {}",
-                                    output,
+                                    "\x1b[1m\x1b[32m==>\x1b[0m\x1b[1m Entropy: {} + {} = {}\x1b[0m",
+                                    lines[0],
                                 )
                                 parsed = True
                             except:
@@ -98,7 +101,7 @@ class Entropy(QObject):
                             # Attempt to parse Crinkler output format.
                             lines: List[str] = list(filter(
                                 lambda line: line.lstrip().startswith("Ideal compressed size of data:"),
-                                output.splitlines(),
+                                result.stdout.decode('utf-8').strip().splitlines(),
                             ))
                             if len(lines) != 0:
                                 [data_size] = parse(
@@ -109,7 +112,8 @@ class Entropy(QObject):
 
                             if not parsed:
                                 print("Could not parse build output:")
-                                print(output)
+                                print(result.stdout.decode('utf-8').strip())
+                                print(result.stderr.decode('utf-8').strip())
 
                             self._versions[hash] = data_size
                     except:
